@@ -19,13 +19,34 @@ import org.jgap.gp.function.*;
 import org.jgap.gp.impl.*;
 import org.jgap.gp.terminal.*;
 
+/**
+ * Example demonstrating Genetic Programming (GP) capabilities of JGAP.
+ * Also demonstrates usage of ADF's.<br>
+ * The problem is to find a formula for a given truth table (X/Y-pairs).
+ * <p>
+ * <ul>
+ * <li>The setup of the GP is done in method main and specifically in method
+ * create()</li>
+ * <li>The problem solving process is started via gp.evolve(800) in the main
+ * method, with 800 the maximum number of evolutions to take place.
+ * <li>The evaluation of the evolved formula is done in fitness function
+ * FormulaFitnessFunction, which is implemented in this class, GeneticProgramProject
+ * </ul>
+ * <br>
+ * For details, please see the mentioned methods and the fitness function.
+ * <p>
+ * @author Klaus Meffert
+ * @since 3.0
+ */
 public class GeneticProgramProject
     extends GPProblem {
   /** String containing the CVS revision. Read out via reflection!*/
   private final static String CVS_REVISION = "$Revision: 1.25 $";
 
   public static Variable vx;
+
   protected static Float[] x = new Float[20];
+
   protected static float[] y = new float[20];
 
   public GeneticProgramProject(GPConfiguration a_conf)
@@ -80,8 +101,12 @@ public class GeneticProgramProject
         vx = Variable.create(conf, "X", CommandGene.FloatClass),
         new Multiply(conf, CommandGene.FloatClass),
         new Add(conf, CommandGene.FloatClass),
+        //new Multiply3(conf, CommandGene.FloatClass),
         new Divide(conf, CommandGene.FloatClass),
+        //new Sine(conf, CommandGene.FloatClass),
+        //new Exp(conf, CommandGene.FloatClass),
         new Subtract(conf, CommandGene.FloatClass),
+        //new Pow(conf, CommandGene.FloatClass),
         new Terminal(conf, CommandGene.FloatClass, 1.0d, 10.0d, true),
         // ADF-relevant:
         // Construct a reference to the ADF defined in the second nodeset
@@ -99,7 +124,7 @@ public class GeneticProgramProject
     // function/formula to evolve by the GP.
     // -----------------------------------------------------------------------
     Random random = new Random();
-    // Randomly initialize function data (X-Y table) for (x*x-1)/2
+    // Randomly initialize function data (X-Y table) for x^4+x^3+x^2-x
     // ---------------------------------------------------------------
     for (int i = 0; i < 20; i++) {
       float f = 8.0f * (random.nextFloat() - 0.3f);
@@ -121,8 +146,14 @@ public class GeneticProgramProject
         20, true);
   }
 
-  /*
-   * Create solutions
+  /**
+   * Starts the example.
+   *
+   * @param args ignored
+   * @throws Exception
+   *
+   * @author Klaus Meffert
+   * @since 3.0
    */
   public static void main(String[] args)
       throws Exception {
@@ -135,7 +166,7 @@ public class GeneticProgramProject
     // ----------------------------------------------------------------------
     config.setGPFitnessEvaluator(new DeltaGPFitnessEvaluator());
     config.setMaxInitDepth(4);
-    config.setPopulationSize(10);
+    config.setPopulationSize(100);
     config.setMaxCrossoverDepth(6);
     config.setFitnessFunction(new GeneticProgramProject.FormulaFitnessFunction());
     config.setStrictProgramCreation(true);
@@ -152,17 +183,7 @@ public class GeneticProgramProject
     // if a satisfying result is found (fitness value almost 0), JGAP stops
     // earlier automatically.
     // --------------------------------------------------------------------
-
-    for (int cntGen=0; cntGen<=5; cntGen++) {
-	    // gp.evolve(100);
-	    gp.evolve();
-	    IGPProgram[] currGeneration = gp.getGPPopulation().getGPPrograms();
-
-		System.out.println( "Generation # " + cntGen + " size = " + currGeneration.length );
-
-	    for (int cntProg=0; cntProg<currGeneration.length; cntProg++)
-	    	gp.outputSolution(currGeneration[cntProg]);
-	}
+    gp.evolve(100);
     // Print the best solution so far to the console.
     // ----------------------------------------------
     gp.outputSolution(gp.getAllTimeBest());

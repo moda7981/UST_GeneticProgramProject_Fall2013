@@ -183,7 +183,15 @@ public class GeneticProgramProject
     // if a satisfying result is found (fitness value almost 0), JGAP stops
     // earlier automatically.
     // --------------------------------------------------------------------
-    gp.evolve(100);
+    Date currDate = new Date();
+    long currTime = currDate.getTime();
+    long endTime = currTime + (long)12*60*1000;
+
+    while (currTime < endTime) {
+	    gp.evolve(1);
+	    currDate = new Date();
+	    currTime = currDate.getTime();
+	}
     // Print the best solution so far to the console.
     // ----------------------------------------------
     gp.outputSolution(gp.getAllTimeBest());

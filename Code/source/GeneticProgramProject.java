@@ -1,13 +1,16 @@
 /*
- * This file is part of JGAP.
+ * SEIS 610 Software Engineering Project
+ * This class uses the JGAP API to create a genetic program that
+ * finds a solution for the target function (x*x-1)/2
  *
  * JGAP offers a dual license model containing the LGPL as well as the MPL.
  *
  * For licensing information please see the file license.txt included with JGAP
  * or have a look at the top of class org.jgap.Chromosome which representatively
  * includes the JGAP license policy applicable for any file delivered with JGAP.
+ *
+ * Author: Pradip Modak
  */
-//package examples.gp;
 
 import java.util.*;
 import org.jgap.*;
@@ -17,26 +20,6 @@ import org.jgap.gp.impl.*;
 import org.jgap.gp.terminal.*;
 import java.io.*;
 
-
-/**
- * Example demonstrating Genetic Programming (GP) capabilities of JGAP.
- * Also demonstrates usage of ADF's.<br>
- * The problem is to find a formula for a given truth table (X/Y-pairs).
- * <p>
- * <ul>
- * <li>The setup of the GP is done in method main and specifically in method
- * create()</li>
- * <li>The problem solving process is started via gp.evolve(800) in the main
- * method, with 800 the maximum number of evolutions to take place.
- * <li>The evaluation of the evolved formula is done in fitness function
- * FormulaFitnessFunction, which is implemented in this class, GeneticProgramProject
- * </ul>
- * <br>
- * For details, please see the mentioned methods and the fitness function.
- * <p>
- * @author Klaus Meffert
- * @since 3.0
- */
 public class GeneticProgramProject
     extends GPProblem  {
   /** String containing the CVS revision. Read out via reflection!*/
@@ -173,10 +156,6 @@ public class GeneticProgramProject
 	}
 	*/
 
-
-
-
-
     // Create genotype with initial population. Here, we use the declarations
     // made above:
     // Use one result-producing chromosome (index 0) with return type float
@@ -213,8 +192,11 @@ public class GeneticProgramProject
 
 	try {
 		   //load a properties file
+
+		String fileName = args[0];
+		System.out.println( "Input file = " + fileName);
 		Properties prop = new Properties();
-		prop.load(new FileInputStream("gp1.properties"));
+		prop.load(new FileInputStream(fileName));
 
 		//get the property value and print it out
 		//System.out.println("Before getProperty x val");

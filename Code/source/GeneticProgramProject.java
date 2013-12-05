@@ -1,16 +1,13 @@
 /*
- * SEIS 610 Software Engineering Project
- * This class uses the JGAP API to create a genetic program that
- * finds a solution for the target function (x*x-1)/2
+ * This file is part of JGAP.
  *
  * JGAP offers a dual license model containing the LGPL as well as the MPL.
  *
  * For licensing information please see the file license.txt included with JGAP
  * or have a look at the top of class org.jgap.Chromosome which representatively
  * includes the JGAP license policy applicable for any file delivered with JGAP.
- *
- * Author: Pradip Modak
  */
+//package examples.gp;
 
 import java.util.*;
 import org.jgap.*;
@@ -18,6 +15,8 @@ import org.jgap.gp.*;
 import org.jgap.gp.function.*;
 import org.jgap.gp.impl.*;
 import org.jgap.gp.terminal.*;
+import java.io.*;
+
 
 /**
  * Example demonstrating Genetic Programming (GP) capabilities of JGAP.
@@ -39,20 +38,36 @@ import org.jgap.gp.terminal.*;
  * @since 3.0
  */
 public class GeneticProgramProject
-    extends GPProblem {
+    extends GPProblem  {
   /** String containing the CVS revision. Read out via reflection!*/
   private final static String CVS_REVISION = "$Revision: 1.25 $";
 
   public static Variable vx;
 
-  protected static Float[] x = new Float[20];
+  public static int trainingData=10;
+  private static long runTime=0;
 
-  protected static float[] y = new float[20];
+
+  protected static Float[] x = new Float[trainingData];
+  protected static float[] y = new float[trainingData];
+
+  public void setTD(int a)
+  {
+  	trainingData = a;
+   	Float[] x = new Float[trainingData];
+  	float[] y = new float[trainingData];
+  }
 
   public GeneticProgramProject(GPConfiguration a_conf)
       throws InvalidConfigurationException {
     super(a_conf);
   }
+
+  //public CommandGene applyMutation (int index, double a_percentage)
+  	//throws InvalidConfigurationException {
+	//		Multiply mutant = new Multiply (getGPConfiguration(), getReturnType());
+	//		return mutant;
+  //}
 
   /**
    * This method is used for setting up the commands and terminals that can be
@@ -118,20 +133,50 @@ public class GeneticProgramProject
         // and now the definition of ADF(1)
         {
         new Add3(conf, CommandGene.FloatClass),
+        //new Add(conf, CommandGene.FloatClass),  //gdw...already implented above
     }
     };
     // Here, we define the expected (optimal) output we want to achieve by the
     // function/formula to evolve by the GP.
     // -----------------------------------------------------------------------
-    Random random = new Random();
+    //Random random = new Random();
     // Randomly initialize function data (X-Y table) for x^4+x^3+x^2-x
     // ---------------------------------------------------------------
-    for (int i = 0; i < 20; i++) {
+    /*  for (int i = 0; i < 20; i++) {
       float f = 8.0f * (random.nextFloat() - 0.3f);
       x[i] = new Float(f);
       y[i] = (f * f - 1)/2;
       System.out.println(i + ") " + x[i] + "   " + y[i]);
-    }
+    }*/
+
+    //trainingData=2;  //TESTTESTTEST
+
+    //System.out.println("Default training data values = " + trainingData);
+    //System.out.println("You have chosen to enter trainingData manually.");
+	//System.out.println("How many pieces of training data do you have?");
+	//Scanner clientInput = new Scanner(System.in);
+	//trainingData = clientInput.nextInt();
+
+	/*System.out.println("Before accepting input data.  Value of training data is: " + trainingData);
+
+    for (int i = 0; i < trainingData; i++)
+    {
+
+		System.out.println("Please enter the x value for training data # " + i);
+
+		x[i] = clientInput.nextFloat();
+
+		System.out.println("Please enter the y value for training data # " + i);
+		y[i] = clientInput.nextFloat();
+
+		System.out.println(i + ") " + x[i] + "   " + y[i]);
+	}
+	*/
+
+
+
+
+
     // Create genotype with initial population. Here, we use the declarations
     // made above:
     // Use one result-producing chromosome (index 0) with return type float
@@ -143,7 +188,7 @@ public class GeneticProgramProject
     // float (argTypes[1]) and exactly one function: Add3 (nodeSets[1]).
     // ------------------------------------------------------------------------
     return GPGenotype.randomInitialGenotype(conf, types, argTypes, nodeSets,
-        20, true);
+        trainingData, true);
   }
 
   /**
@@ -157,21 +202,109 @@ public class GeneticProgramProject
    */
   public static void main(String[] args)
       throws Exception {
-    System.out.println("Formula to discover: (X*X-1)/2");
+    System.out.println("Formula to discover: (-3*X*X+7)/2");
     // Setup the algorithm's parameters.
     // ---------------------------------
+
+    //System.out.println("How many pieces of training data do you have?  Please enter a number between 0 and 100.");
+    //System.out.println("Initial value of trainingData = " + trainingData);
+    Scanner trainingInput = new Scanner(System.in);
+	//trainingData = trainingInput.nextInt();
+
+	try {
+		   //load a properties file
+		Properties prop = new Properties();
+		prop.load(new FileInputStream("gp1.properties"));
+
+		//get the property value and print it out
+		//System.out.println("Before getProperty x val");
+		//System.out.println(prop.getProperty("x_value"));
+		//System.out.println(prop.getProperty("y_value"));
+		//System.out.println("After getProperty y val");
+
+		//String numValues = prop.getProperty("num_values");
+		//trainingData = Integer.parseInt(numValues);
+		//System.out.println("trainingData = " + trainingData);
+
+		String strRunTime = prop.getProperty("run_time");
+		runTime = Long.parseLong(strRunTime);
+
+		System.out.println( "Program run time set at " + runTime + " minutes.");
+
+		String xValString = prop.getProperty("x_value");
+		String yValString = prop.getProperty("y_value");
+
+		String [] xValArray = xValString.split(",");
+		String [] yValArray = yValString.split(",");
+
+		for (int i = 0; i < xValArray.length; i++)
+		{
+			System.out.println( "x[i] = " + i);
+				x[i] = Float.valueOf(xValArray[i]).floatValue();
+		}
+
+		for (int i = 0; i < yValArray.length; i++)
+		{
+				y[i] = Float.valueOf(yValArray[i]).floatValue();
+		}
+
+
+		System.out.println( "Finished reading training data");
+
+		System.out.print("Values of x = ");
+		for (int i = 0; i < xValArray.length; i++)
+		{
+			System.out.print(x[i] + " ");
+		}
+		System.out.println();
+
+		System.out.print("Values of y = ");
+		for (int i = 0; i < yValArray.length; i++)
+		{
+			System.out.print(y[i] + " ");
+		}
+		System.out.println();
+
+   /* for (int i = 0; i < trainingData; i++)
+    {
+
+		System.out.println("Please enter the x value for training data # " + i);
+
+		x[i] = clientInput.nextFloat();
+
+		System.out.println("Please enter the y value for training data # " + i);
+		y[i] = clientInput.nextFloat();
+
+		System.out.println(i + ") " + x[i] + "   " + y[i]);
+	}*/
+
+	} catch (IOException ex) {
+		ex.printStackTrace();
+	}
+
+
+	/*Scanner clientInput = new Scanner(System.in);
+	while (trainingData > 100 || trainingData < 0)
+	{
+	   System.out.println("Your input does not match the criteria, please enter a number between 0 and 100");
+
+	   while(!clientInput.hasNextInt())
+	   {
+	       clientInput.next() ;
+	   }
+	   trainingData = clientInput.nextInt();
+    }*/
+
     GPConfiguration config = new GPConfiguration();
     // We use a delta fitness evaluator because we compute a defect rate, not
     // a point score!
     // ----------------------------------------------------------------------
     config.setGPFitnessEvaluator(new DeltaGPFitnessEvaluator());
     config.setMaxInitDepth(4);
-    config.setPopulationSize(100);
+    config.setPopulationSize(400);
     config.setMaxCrossoverDepth(6);
     config.setFitnessFunction(new GeneticProgramProject.FormulaFitnessFunction());
     config.setStrictProgramCreation(true);
-
-    System.out.println( "getMutationProb = " + config.getMutationProb() );
     GPProblem problem = new GeneticProgramProject(config);
     // Create the genotype of the problem, i.e., define the GP commands and
     // terminals that can be used, and constrain the structure of the GP
@@ -183,15 +316,16 @@ public class GeneticProgramProject
     // if a satisfying result is found (fitness value almost 0), JGAP stops
     // earlier automatically.
     // --------------------------------------------------------------------
+
     Date currDate = new Date();
     long currTime = currDate.getTime();
-    long endTime = currTime + (long)12*60*1000;
-
+    long endTime = currTime + (long) (runTime*60*1000);
     while (currTime < endTime) {
-	    gp.evolve(1);
-	    currDate = new Date();
-	    currTime = currDate.getTime();
+    	gp.evolve(1);
+    	currDate = new Date();
+    	currTime = currDate.getTime();
 	}
+    // gp.applyMutation(1,.08);
     // Print the best solution so far to the console.
     // ----------------------------------------------
     gp.outputSolution(gp.getAllTimeBest());
@@ -217,9 +351,9 @@ public class GeneticProgramProject
     public double computeRawFitness(final IGPProgram ind) {
       double error = 0.0f;
       Object[] noargs = new Object[0];
-      // Evaluate function for input numbers 0 to 20.
+      // Evaluate function for input numbers 0 to 10.
       // --------------------------------------------
-      for (int i = 0; i < 20; i++) {
+      for (int i = 0; i < trainingData; i++) {
         // Provide the variable X with the input number.
         // See method create(), declaration of "nodeSets" for where X is
         // defined.

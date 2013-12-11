@@ -1,0 +1,1 @@
+java GeneticProgramProject gp1.properties

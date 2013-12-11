@@ -27,7 +27,7 @@ public class GeneticProgramProject
 
   public static Variable vx;
 
-  public static int trainingData=10;
+  public static int trainingData=20;
   private static long runTime=0;
 
 
@@ -282,9 +282,9 @@ public class GeneticProgramProject
     // a point score!
     // ----------------------------------------------------------------------
     config.setGPFitnessEvaluator(new DeltaGPFitnessEvaluator());
-    config.setMaxInitDepth(4);
-    config.setPopulationSize(400);
-    config.setMaxCrossoverDepth(6);
+    config.setMaxInitDepth(8);
+    config.setPopulationSize(100);
+    config.setMaxCrossoverDepth(8);
     config.setFitnessFunction(new GeneticProgramProject.FormulaFitnessFunction());
     config.setStrictProgramCreation(true);
     GPProblem problem = new GeneticProgramProject(config);
@@ -304,6 +304,9 @@ public class GeneticProgramProject
     long endTime = currTime + (long) (runTime*60*1000);
     while (currTime < endTime) {
     	gp.evolve(1);
+    	IGPProgram fittestProg = gp.getFittestProgram();
+    	double fitness = fittestProg.getFitnessValue();
+    	System.out.println( "fitness = " + fitness );
     	currDate = new Date();
     	currTime = currDate.getTime();
 	}
